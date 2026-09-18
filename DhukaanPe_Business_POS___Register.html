@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#07130e" />
+  <meta name="description" content="DhukaanPe / DhukaanLe - Smart POS with Bill Splitter & Transparent Fee Ledger for Charan Traders, Ganesh Nagar, Kurnool" />
+  <title>DhukaanPe™ (DhukaanLe) POS - Charan Traders Kurnool</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            jade: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16'
+            },
+            merchant: {
+              dark: '#07130e',
+              surface: '#0d1f18',
+              card: '#132820',
+              border: '#1f3d32',
+              gold: '#f59e0b',
+              goldLight: '#fde68a',
+              accent: '#10b981'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @keyframes jadeSoundPulse {
+      0%, 100% { height: 6px; }
+      50% { height: 28px; }
+    }
+    .wave-bar {
+      animation: jadeSoundPulse 0.58s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(1) { animation-delay: 0.08s; }
+    .wave-bar:nth-child(2) { animation-delay: 0.24s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.14s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.32s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.2s; }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-thumb { background: #1f3d32; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+
+<body class="bg-merchant-dark text-slate-100 min-h-screen font-sans antialiased selection:bg-jade-600 selection:text-white flex flex-col">
+
+  <!-- ================= TOP STATUTORY DISCLAIMER (ANTI-IMPERSONATION SHIELD) ================= -->
+  <aside class="bg-slate-950 border-b border-amber-500/20 text-[11px] px-3 sm:px-5 py-1.5 text-slate-300">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+          Independent App
+        </span>
+        <span class="text-slate-400 text-[10px] sm:text-[11px]">
+          DhukaanPe™ (DhukaanLe) is owned & operated by DhukaanPe Technologies Pvt. Ltd. Not affiliated with PhonePe, BharatPe, or Paytm.
+        </span>
+      </div>
+      <div class="flex items-center gap-3 text-[10px]">
+        <span class="text-emerald-400 font-mono flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3 h-3"></i> Trademark Class 9 & 36
+        </span>
+        <button onclick="toggleModal('legal-modal')" class="text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer">
+          Legal Disclosures & IP Status
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN HEADER (MERCHANT IDENTITY & HARDWARE) ================= -->
+  <header class="bg-gradient-to-r from-merchant-surface via-merchant-dark to-slate-950 border-b border-merchant-border sticky top-0 z-40 shadow-xl backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3">
+      
+      <!-- Custom Geometric Emblem & Store Profile -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-jade-700 via-jade-500 to-amber-400 p-0.5 shadow-md flex-shrink-0">
+          <div class="w-full h-full bg-merchant-dark rounded-[14px] flex items-center justify-center text-amber-400">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/>
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+              <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/>
+              <path d="M2 7h20"/>
+            </svg>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-extrabold text-sm sm:text-base text-white tracking-tight flex items-center gap-1">
+              <span>Dhukaan</span><span class="text-amber-400">Pe</span>
+              <span class="text-[10px] text-slate-400 font-normal">/</span>
+              <span class="text-emerald-400 font-bold text-xs">DhukaanLe</span>
+              <span class="text-[9px] bg-jade-900/80 text-jade-300 border border-jade-600/40 px-1.5 py-0.5 rounded font-mono font-bold uppercase">POS OS</span>
+            </h1>
+            <button onclick="toggleModal('kyb-modal')" class="inline-flex items-center gap-1 text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30 hover:bg-emerald-500/30 transition">
+              <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i> KYB Verified
+            </button>
+            <button onclick="toggleModal('zero-mdr-modal')" class="inline-flex items-center gap-1 text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-500/30 hover:bg-amber-500/30 transition">
+              <i data-lucide="percent" class="w-3 h-3 text-amber-400"></i> 0% MDR (P2PM)
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-300 font-medium truncate">
+            Charan Traders • Ganesh Nagar, Kurnool • MCC: 5411 (Retail Grocery)
+          </p>
+        </div>
+      </div>
+
+      <!-- Soundbox Controls & Cashier Mode Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- 4G IoT Speaker Language Selection -->
+        <div class="hidden sm:flex items-center gap-2 bg-merchant-surface border border-merchant-border px-2.5 py-1.5 rounded-xl text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-300 font-semibold text-[11px]">4G Speaker</span>
+          <select id="speaker-lang-select" class="bg-merchant-card text-amber-300 font-bold text-xs rounded-lg px-2 py-1 border border-merchant-border focus:outline-none cursor-pointer">
+            <option value="te-IN" selected>తెలుగు (Telugu)</option>
+            <option value="hi-IN">हिन्दी (Hindi)</option>
+            <option value="en-IN">English (India)</option>
+          </select>
+        </div>
+
+        <!-- Role Toggle (Owner vs Cashier PIN) -->
+        <div class="flex items-center bg-merchant-surface border border-merchant-border rounded-xl p-1 text-xs">
+          <button id="role-owner-btn" onclick="setRole('owner')" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition bg-jade-700 text-white shadow-sm flex items-center gap-1">
+            <i data-lucide="user-check" class="w-3 h-3"></i> <span>Owner</span>
+          </button>
+          <button id="role-cashier-btn" onclick="setRole('cashier')" class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition text-slate-400 hover:text-white flex items-center gap-1">
+            <i data-lucide="lock" class="w-3 h-3"></i> <span>Cashier</span>
+          </button>
+        </div>
+
+        <button onclick="toggleModal('share-modal')" class="p-2 text-emerald-400 hover:text-white hover:bg-merchant-surface rounded-xl transition" title="Share App Link">
+          <i data-lucide="share-2" class="w-4 h-4"></i>
+        </button>
+
+        <button onclick="toggleModal('legal-modal')" class="p-2 text-amber-400 hover:text-white hover:bg-merchant-surface rounded-xl transition" title="Legal Protection & IP Details">
+          <i data-lucide="scale" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-slate-950/80 border-t border-merchant-border px-3 sm:px-5">
+      <div class="max-w-7xl mx-auto flex gap-1 overflow-x-auto no-scrollbar py-1">
+        <button onclick="switchTab('pos')" id="tab-btn-pos" class="tab-btn px-4 py-2 rounded-xl text-xs font-black text-white bg-jade-700 flex items-center gap-2 shrink-0 transition">
+          <i data-lucide="calculator" class="w-3.5 h-3.5"></i> Register POS
+        </button>
+        <button onclick="switchTab('zreport')" id="tab-btn-zreport" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2 shrink-0 transition">
+          <i data-lucide="receipt" class="w-3.5 h-3.5"></i> Z-Report (Audit)
+        </button>
+        <button onclick="switchTab('savings')" id="tab-btn-savings" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2 shrink-0 transition">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i> Zero-MDR & Fee Ledger
+        </button>
+        <button onclick="switchTab('khata')" id="tab-btn-khata" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2 shrink-0 transition">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Customer Khata
+        </button>
+        <button onclick="switchTab('banking')" id="tab-btn-banking" class="owner-only tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2 shrink-0 transition">
+          <i data-lucide="landmark" class="w-3.5 h-3.5 text-emerald-400"></i> Settlements & Loans
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE CONTAINER ================= -->
+  <main class="max-w-7xl mx-auto p-3 sm:p-5 w-full flex-1">
+
+    <!-- ================= TAB 1: COUNTER REGISTER & POS ================= -->
+    <section id="view-pos" class="space-y-4">
+      
+      <!-- Metrics Ribbon -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-merchant-card border border-merchant-border rounded-2xl p-3.5">
+          <span class="text-[11px] font-semibold text-slate-400 block">Today's Collections</span>
+          <div class="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
+            ₹<span id="metric-today-sales">7,350</span>
+          </div>
+          <span class="text-[10px] text-emerald-400 font-bold flex items-center gap-1 mt-0.5">
+            <i data-lucide="check-circle-2" class="w-3 h-3"></i> <span id="metric-tx-count">21</span> bills closed
+          </span>
+        </div>
+
+        <div class="bg-merchant-card border border-merchant-border rounded-2xl p-3.5 owner-only">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-slate-400">Settleable to Bank</span>
+            <span class="text-[9px] bg-emerald-500/20 text-emerald-300 font-black px-1.5 py-0.2 rounded border border-emerald-500/30">0% MDR</span>
+          </div>
+          <div class="text-xl sm:text-2xl font-black text-emerald-400 font-mono mt-0.5">
+            ₹<span id="metric-settle-pool">6,615</span>
+          </div>
+          <span class="text-[10px] text-slate-300 font-medium block mt-0.5 truncate">
+            Canara Bank Kurnool (••6420)
+          </span>
+        </div>
+
+        <div class="bg-merchant-card border border-merchant-border rounded-2xl p-3.5 owner-only">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-slate-400">Loan Auto-Cut</span>
+            <span class="text-[9px] bg-amber-500/20 text-amber-300 font-black px-1 rounded">10% Split</span>
+          </div>
+          <div class="text-xl sm:text-2xl font-black text-amber-400 font-mono mt-0.5">
+            ₹<span id="metric-loan-cut-today">735</span>
+          </div>
+          <span class="text-[10px] text-slate-400 block mt-0.5">Auto-deducted from sales</span>
+        </div>
+
+        <div class="bg-merchant-card border border-merchant-border rounded-2xl p-3.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-slate-400">0% MDR Savings</span>
+            <span class="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1 rounded">vs EDC POS</span>
+          </div>
+          <div class="text-xl sm:text-2xl font-black text-amber-400 font-mono mt-0.5">
+            ₹<span id="metric-saved-amount">152.22</span>
+          </div>
+          <span class="text-[10px] text-slate-400 block mt-0.5">Escrow Rail (YES Bank TPAP)</span>
+        </div>
+      </div>
+
+      <!-- Workspace Dual Column: Numpad/Catalog & Customer Standee Terminal -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        <!-- LEFT: POS Numpad & Quick Catalog (7 Cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          
+          <!-- Charge Amount Screen Display -->
+          <div class="bg-merchant-card border border-merchant-border rounded-3xl p-5 shadow-lg relative overflow-hidden">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Current Charge Amount</span>
+              <span id="screen-status-badge" class="text-[11px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i> Active POS Keypad
+              </span>
+            </div>
+
+            <div class="flex items-baseline justify-between mt-2">
+              <div class="text-4xl sm:text-5xl font-black text-white font-mono tracking-tight flex items-center">
+                <span class="text-slate-500 text-3xl sm:text-4xl mr-1">₹</span>
+                <span id="numpad-amount-display">0</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="setFastPreset(2500)" class="text-[10px] font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1.5 rounded-xl transition border border-amber-500/30">
+                  Try ₹2,500
+                </button>
+                <button onclick="clearNumpad()" class="text-xs font-bold text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 px-3 py-1.5 rounded-xl transition border border-rose-500/30">
+                  Clear (C)
+                </button>
+              </div>
+            </div>
+
+            <!-- SMART BILL SPLITTER ADVISORY BANNER (Triggers on > ₹2,000) -->
+            <div id="split-alert-banner" class="hidden mt-3 pt-3 border-t border-amber-500/20 bg-amber-500/10 -mx-5 -mb-5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-1.5 font-bold text-amber-300">
+                  <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+                  <span>Single Ticket Exceeds ₹2,000 (NPCI 0.40% Rule)</span>
+                </div>
+                <p class="text-[11px] text-slate-300">
+                  NPCI standard P2M switch fee is 0.40% (~₹<span id="split-potential-fee" class="font-bold text-amber-300">10.00</span>). Split into sub-₹2,000 bills to stay <strong>100% Zero-MDR exempt</strong>!
+                </p>
+              </div>
+              <button onclick="activateSmartSplit()" class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow shrink-0">
+                <i data-lucide="scissors" class="w-3.5 h-3.5"></i>
+                <span>Smart Split Bill</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Fast Kirana Item Picks Catalog -->
+          <div class="bg-merchant-card border border-merchant-border rounded-3xl p-4 shadow-sm space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <i data-lucide="shopping-basket" class="w-3.5 h-3.5 text-emerald-400"></i> Fast Kirana Catalog
+              </h3>
+              <span class="text-[10px] text-slate-500 font-mono">1-Tap Quick Add</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <button onclick="addToBill(32, 'Milk 500ml')" class="text-left p-2.5 rounded-2xl bg-merchant-surface border border-merchant-border hover:border-jade-500 hover:bg-merchant-surface/90 transition active:scale-95 group">
+                <div class="text-xs font-bold text-slate-200 group-hover:text-white">Milk 500ml</div>
+                <div class="text-xs text-amber-400 font-black font-mono">₹32</div>
+              </button>
+              <button onclick="addToBill(135, 'Rice 1kg')" class="text-left p-2.5 rounded-2xl bg-merchant-surface border border-merchant-border hover:border-jade-500 hover:bg-merchant-surface/90 transition active:scale-95 group">
+                <div class="text-xs font-bold text-slate-200 group-hover:text-white">Sona Masoori 1kg</div>
+                <div class="text-xs text-amber-400 font-black font-mono">₹135</div>
+              </button>
+              <button onclick="addToBill(160, 'Toor Dal 1kg')" class="text-left p-2.5 rounded-2xl bg-merchant-surface border border-merchant-border hover:border-jade-500 hover:bg-merchant-surface/90 transition active:scale-95 group">
+                <div class="text-xs font-bold text-slate-200 group-hover:text-white">Toor Dal 1kg</div>
+                <div class="text-xs text-amber-400 font-black font-mono">₹160</div>
+              </button>
+              <button onclick="addToBill(125, 'Oil 1L Pouch')" class="text-left p-2.5 rounded-2xl bg-merchant-surface border border-merchant-border hover:border-jade-500 hover:bg-merchant-surface/90 transition active:scale-95 group">
+                <div class="text-xs font-bold text-slate-200 group-hover:text-white">Sunflower Oil 1L</div>
+                <div class="text-xs text-amber-400 font-black font-mono">₹125</div>
+              </button>
+              <button onclick="addToBill(40, 'Sugar 1kg')" class="text-left p-2.5 rounded-2xl bg-merchant-surface border border-merchant-border hover:border-jade-500 hover:bg-merchant-surface/90 transition active:scale-95 group">
+                <div class="text-xs font-bold text-slate-200 group-hover:text-white">Sugar 1kg</div>
+                <div class="text-xs text-amber-400 font-black font-mono">₹40</div>
+              </button>
+              <button onclick="addToBill(10, 'Tea Dust 50g')" class="text-left p-2.5 rounded-2xl bg-merchant-surface border border-merchant-border hover:border-jade-500 hover:bg-merchant-surface/90 transition active:scale-95 group">
+                <div class="text-xs font-bold text-slate-200 group-hover:text-white">Tea Powder 50g</div>
+                <div class="text-xs text-amber-400 font-black font-mono">₹10</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Numpad Matrix & Tender Actions -->
+          <div class="bg-merchant-card border border-merchant-border rounded-3xl p-4 shadow-sm space-y-3">
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="pressKey('1')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">1</button>
+              <button onclick="pressKey('2')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">2</button>
+              <button onclick="pressKey('3')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">3</button>
+              
+              <button onclick="pressKey('4')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">4</button>
+              <button onclick="pressKey('5')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">5</button>
+              <button onclick="pressKey('6')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">6</button>
+              
+              <button onclick="pressKey('7')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">7</button>
+              <button onclick="pressKey('8')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">8</button>
+              <button onclick="pressKey('9')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">9</button>
+              
+              <button onclick="pressKey('00')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-base font-black text-slate-300 transition border border-merchant-border shadow flex items-center justify-center">00</button>
+              <button onclick="pressKey('0')" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-xl font-black text-white transition border border-merchant-border shadow flex items-center justify-center">0</button>
+              <button onclick="pressBackspace()" class="h-12 sm:h-14 rounded-2xl bg-merchant-surface hover:bg-merchant-border active:bg-slate-800 text-rose-400 transition border border-merchant-border shadow flex items-center justify-center">
+                <i data-lucide="delete" class="w-5 h-5"></i>
+              </button>
+            </div>
+
+            <!-- Tender Decision Buttons -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <button onclick="recordCashTill()" class="py-3 px-4 rounded-2xl border border-merchant-border hover:bg-merchant-surface text-slate-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow">
+                <i data-lucide="banknote" class="w-4 h-4 text-emerald-400"></i> Record Cash (₹)
+              </button>
+              <button onclick="lockAmountOnDynamicQr()" class="py-3 px-4 rounded-2xl bg-gradient-to-r from-jade-700 via-jade-600 to-emerald-600 hover:from-jade-600 hover:to-emerald-500 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-lg shadow-emerald-950/50">
+                <i data-lucide="qr-code" class="w-4 h-4 text-amber-300"></i> Lock Dynamic QR
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: Customer Display Standee & Soundbox Hardware (5 Cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          
+          <!-- Customer Display Standee -->
+          <div class="bg-merchant-card border border-merchant-border rounded-3xl shadow-xl overflow-hidden">
+            
+            <div class="bg-gradient-to-r from-jade-950 via-merchant-surface to-slate-950 px-4 py-3 border-b border-merchant-border flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <div>
+                  <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-300">Customer Facing Terminal</div>
+                  <div class="text-xs font-black text-white">Charan Traders, Kurnool</div>
+                </div>
+              </div>
+              <span class="text-[10px] font-mono bg-white/10 px-2 py-0.5 rounded text-amber-300">charan@ybl</span>
+            </div>
+
+            <div class="p-6 flex flex-col items-center justify-center text-center bg-slate-950/60">
+              
+              <!-- Split Mode Status Indicator Pill -->
+              <div id="split-progress-box" class="hidden mb-3 w-full bg-amber-500/10 border border-amber-500/30 rounded-2xl p-2.5 text-xs text-slate-200">
+                <div class="flex items-center justify-between font-bold text-amber-300 mb-1">
+                  <span class="flex items-center gap-1.5"><i data-lucide="scissors" class="w-3.5 h-3.5"></i> Smart Split in Progress</span>
+                  <span id="split-part-indicator" class="font-mono text-[11px] bg-amber-500/20 px-2 py-0.5 rounded">Part 1 of 2</span>
+                </div>
+                <div class="flex justify-between text-[11px] text-slate-400">
+                  <span>Total Bill: ₹<span id="split-total-orig">0</span></span>
+                  <span class="text-emerald-400 font-bold">MDR Protected: ₹0.00 Fee</span>
+                </div>
+              </div>
+
+              <!-- Lock Status Pill & Zero MDR guarantee tag -->
+              <div class="flex flex-wrap items-center justify-center gap-2 mb-3">
+                <div id="qr-status-pill" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                  <i data-lucide="unlock" class="w-3.5 h-3.5"></i> Open Static Mode
+                </div>
+                <div id="qr-fee-pill" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  <i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i> Zero MDR (0%)
+                </div>
+              </div>
+
+              <!-- QR Code Container -->
+              <div class="p-4 bg-white rounded-3xl shadow-2xl border-4 border-jade-600 relative inline-block">
+                <div id="dynamic-qr-render" class="w-[180px] h-[180px] flex items-center justify-center"></div>
+                <!-- Independent Brand Central Stamp -->
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div class="bg-merchant-dark text-amber-400 text-[9px] font-black px-2 py-0.5 rounded shadow border border-emerald-500 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> DhukaanPe
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Dynamic Billed Amount</div>
+                <div class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono mt-0.5 flex items-center justify-center">
+                  <span>₹</span><span id="standee-amount-display">0.00</span>
+                </div>
+                <p id="standee-subtext" class="text-[11px] text-slate-400 mt-0.5">Compatible with Any Authorized UPI App</p>
+                <p id="standee-fee-note" class="text-[10px] text-emerald-400 font-mono mt-1">Merchant Fee: ₹0.00 (Zero MDR) • 100% credited</p>
+              </div>
+
+              <!-- Quick Simulation Bar -->
+              <div class="mt-4 w-full pt-3 border-t border-merchant-border space-y-2">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Customer Test Simulation:</span>
+                <div class="grid grid-cols-2 gap-2">
+                  <button onclick="simulateCustomerPayment('Ramesh Kumar (Ganesh Nagar)', 'UPI App')" class="py-2.5 px-2 bg-merchant-surface hover:bg-merchant-border border border-jade-600/40 text-emerald-300 text-xs font-bold rounded-xl active:scale-95 transition flex items-center justify-center gap-1">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span id="sim-pay-btn-text">Scan & Pay UPI</span>
+                  </button>
+                  <button onclick="simulateCardTap()" class="py-2.5 px-2 bg-merchant-surface hover:bg-merchant-border border border-amber-500/40 text-amber-300 text-xs font-bold rounded-xl active:scale-95 transition flex items-center justify-center gap-1">
+                    <i data-lucide="contactless" class="w-3.5 h-3.5"></i>
+                    <span>Tap RuPay Card</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- 4G IoT Soundbox Hardware Panel -->
+          <div class="bg-merchant-card border border-merchant-border rounded-3xl p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-merchant-border pb-2.5">
+              <div class="flex items-center gap-2">
+                <i data-lucide="volume-2" class="w-4 h-4 text-amber-400"></i>
+                <span class="text-xs font-black text-white">DhukaanPe 4G SmartSpeaker</span>
+              </div>
+              
+              <!-- Equalizer Waveform -->
+              <div id="soundbox-equalizer" class="hidden items-end gap-1 h-5">
+                <div class="wave-bar w-1 bg-amber-400 rounded-full"></div>
+                <div class="wave-bar w-1 bg-emerald-400 rounded-full"></div>
+                <div class="wave-bar w-1 bg-emerald-300 rounded-full"></div>
+                <div class="wave-bar w-1 bg-white rounded-full"></div>
+                <div class="wave-bar w-1 bg-amber-400 rounded-full"></div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400 text-[11px]">Last Broadcast:</span>
+              <span id="soundbox-last-spoken" class="text-slate-200 font-mono text-[11px] truncate max-w-[200px] italic">
+                Ready for payment...
+              </span>
+            </div>
+
+            <button onclick="replayAnnouncement()" class="w-full py-2 bg-merchant-surface hover:bg-merchant-border text-amber-300 font-bold text-xs rounded-xl transition border border-merchant-border flex items-center justify-center gap-1.5 active:scale-95">
+              <i data-lucide="repeat" class="w-3.5 h-3.5"></i> Replay Last Audio Announcement
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= TAB 2: END-OF-DAY Z-REPORT & AUDIT ================= -->
+    <section id="view-zreport" class="space-y-4 hidden">
+      <div class="bg-merchant-card border border-merchant-border rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-merchant-border pb-4">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Daily Reconciliation Report</span>
+            <h2 class="text-lg sm:text-xl font-black text-white mt-0.5">Charan Traders - End-of-Day Z-Report</h2>
+            <p class="text-xs text-slate-400">Shift: Register 01 • Ganesh Nagar, Kurnool • <span id="z-date-label">Today</span></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="px-3 py-2 bg-merchant-surface hover:bg-merchant-border text-slate-200 text-xs font-bold rounded-xl border border-merchant-border flex items-center gap-1.5 transition">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print Summary
+            </button>
+            <button onclick="settleInstantImps()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-xl shadow-lg transition active:scale-95 flex items-center gap-1.5">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i> Settle & Close Shift
+            </button>
+          </div>
+        </div>
+
+        <!-- Z-Report Breakdown -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="bg-merchant-surface p-4 rounded-2xl border border-merchant-border">
+            <span class="text-[10px] font-bold uppercase text-slate-400">Total Gross Turnover</span>
+            <div class="text-2xl font-black text-white font-mono mt-1">₹<span id="z-gross-val">7,350</span></div>
+            <span class="text-[10px] text-amber-300 font-semibold mt-1 block"><span id="z-count-val">21</span> Receipts Closed</span>
+          </div>
+
+          <div class="bg-merchant-surface p-4 rounded-2xl border border-merchant-border">
+            <span class="text-[10px] font-bold uppercase text-slate-400">UPI Collections</span>
+            <div class="text-2xl font-black text-emerald-400 font-mono mt-1">₹<span id="z-upi-val">6,450</span></div>
+            <span class="text-[10px] text-emerald-300 font-semibold mt-1 block">NPCI Switch Clearing</span>
+          </div>
+
+          <div class="bg-merchant-surface p-4 rounded-2xl border border-merchant-border">
+            <span class="text-[10px] font-bold uppercase text-slate-400">Cash in Till Register</span>
+            <div class="text-2xl font-black text-amber-400 font-mono mt-1">₹<span id="z-cash-val">900</span></div>
+            <span class="text-[10px] text-amber-300 font-semibold mt-1 block">Physical Counter Cash</span>
+          </div>
+
+          <div class="bg-merchant-surface p-4 rounded-2xl border border-merchant-border">
+            <span class="text-[10px] font-bold uppercase text-slate-400">Loan Auto-Cut (10%)</span>
+            <div class="text-2xl font-black text-rose-400 font-mono mt-1">-₹<span id="z-loan-val">735</span></div>
+            <span class="text-[10px] text-rose-300 font-semibold mt-1 block">Credited to Vyapar Loan</span>
+          </div>
+        </div>
+
+        <!-- TRANSPARENT REGULATORY INTERCHANGE & FEE TRANSPARENCY LEDGER -->
+        <div class="p-4 bg-merchant-surface border border-merchant-border rounded-2xl text-xs space-y-3">
+          <div class="flex items-center justify-between font-bold text-amber-300">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="scale" class="w-4 h-4 text-amber-400"></i>
+              <span>Regulatory Interchange & Fee Transparency Ledger</span>
+            </span>
+            <span class="font-mono text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
+              AUDIT COMPLIANT
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-[11px]">
+            <div class="p-2.5 bg-merchant-dark rounded-xl border border-merchant-border">
+              <span class="text-slate-400 block text-[10px]">NPCI Switch Interchange</span>
+              <strong class="text-white font-mono text-xs">₹<span id="ledger-npci-fee">0.00</span></strong>
+              <span class="text-[9px] text-emerald-400 block mt-0.5">0.40% on >₹2k, 0.00% on ≤₹2k</span>
+            </div>
+
+            <div class="p-2.5 bg-merchant-dark rounded-xl border border-merchant-border">
+              <span class="text-slate-400 block text-[10px]">DhukaanPe Platform Markup</span>
+              <strong class="text-emerald-400 font-mono text-xs">₹0.00</strong>
+              <span class="text-[9px] text-slate-400 block mt-0.5">Guaranteed Zero Surcharge</span>
+            </div>
+
+            <div class="p-2.5 bg-merchant-dark rounded-xl border border-merchant-border">
+              <span class="text-slate-400 block text-[10px]">Traditional 2% POS Cost</span>
+              <strong class="text-rose-400 font-mono text-xs">-₹<span id="ledger-trad-cost">152.22</span></strong>
+              <span class="text-[9px] text-rose-300 block mt-0.5">Card Swipe + 18% GST</span>
+            </div>
+
+            <div class="p-2.5 bg-emerald-950/40 rounded-xl border border-emerald-500/30">
+              <span class="text-emerald-300 block text-[10px] font-bold">Net Remittance to Canara</span>
+              <strong class="text-emerald-400 font-mono text-xs">₹<span id="ledger-net-remit">5,715.00</span></strong>
+              <span class="text-[9px] text-emerald-300 block mt-0.5">100% Settleable Balance</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Journal Table with Exact Fee Breakdown -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Shift Audit Journal (Itemized MDR Cuts)</h3>
+            <span class="text-[10px] text-slate-400 font-mono">Real-time switch deductions</span>
+          </div>
+          <div class="overflow-x-auto rounded-2xl border border-merchant-border">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-merchant-surface text-slate-400 uppercase font-bold text-[10px]">
+                <tr>
+                  <th class="py-2.5 px-3">Time</th>
+                  <th class="py-2.5 px-3">Tender Mode</th>
+                  <th class="py-2.5 px-3">Reference / Customer</th>
+                  <th class="py-2.5 px-3">Switch Fee Rule</th>
+                  <th class="py-2.5 px-3 text-right">Fee Cut</th>
+                  <th class="py-2.5 px-3 text-right">Net Credit</th>
+                </tr>
+              </thead>
+              <tbody id="audit-journal-rows" class="divide-y divide-merchant-border/60 bg-merchant-dark font-medium">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: CUSTOMER KHATA LEDGER ================= -->
+    <section id="view-khata" class="space-y-4 hidden">
+      <div class="bg-merchant-card border border-merchant-border rounded-3xl p-5 sm:p-6 shadow-xl space-y-4">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-merchant-border pb-4">
+          <div>
+            <h2 class="text-base font-black text-white">Charan Traders Customer Udhaar Khata</h2>
+            <p class="text-xs text-slate-400">Manage customer store credit with 1-click WhatsApp payment reminders with direct UPI links</p>
+          </div>
+          <button onclick="toggleModal('khata-modal')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-1.5 transition active:scale-95 self-start">
+            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Add Customer Credit
+          </button>
+        </div>
+
+        <!-- Total Pending Banner -->
+        <div class="bg-merchant-surface border border-merchant-border rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-rose-400 font-bold uppercase tracking-wider">Total Pending Store Credit</span>
+            <div class="text-2xl font-black text-rose-400 font-mono mt-0.5" id="khata-total-amt">₹3,720</div>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">Charan Traders • Kurnool</span>
+        </div>
+
+        <!-- Khata Customer Cards -->
+        <div id="khata-cards-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Populated via JS -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: 0% MDR SAVINGS & TRANSPARENT LEDGER ================= -->
+    <section id="view-savings" class="space-y-4 hidden">
+      <div class="bg-merchant-card border border-merchant-border rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-merchant-border pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded">
+                Merchant Profit Protector
+              </span>
+              <span class="text-xs text-emerald-400 font-bold">100% Transparent Pricing</span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-black text-white mt-1">Charan Traders Zero-MDR Cost Savings</h2>
+            <p class="text-xs text-slate-400">Understand the NPCI 0.40% rule (>₹2,000) and how DhukaanPe protects your bottom line</p>
+          </div>
+          
+          <button onclick="toggleModal('zero-mdr-modal')" class="px-4 py-2 bg-merchant-surface hover:bg-merchant-border border border-merchant-border text-amber-300 text-xs font-bold rounded-xl flex items-center gap-1.5 transition self-start sm:self-auto">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5"></i> Why is DhukaanPe Free?
+          </button>
+        </div>
+
+        <!-- Comparison Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Traditional Machine Card -->
+          <div class="bg-rose-950/20 border border-rose-800/40 rounded-3xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-rose-900/50 pb-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="credit-card" class="w-5 h-5 text-rose-400"></i>
+                <div>
+                  <h3 class="text-sm font-black text-rose-200">Standard Card POS Machines</h3>
+                  <p class="text-[10px] text-rose-300/80">Traditional Bank Card Swipes & Aggregators</p>
+                </div>
+              </div>
+              <span class="text-xs font-mono font-bold bg-rose-900/50 text-rose-300 px-2 py-0.5 rounded border border-rose-700">2.0% + GST</span>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between text-slate-300">
+                <span>Today's Digital Volume (₹<span class="calc-upi-sales">6,450</span>):</span>
+                <span class="font-mono text-rose-400 font-bold">-₹<span id="trad-mdr-fee">129.00</span></span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>18% GST on Processing Fee:</span>
+                <span class="font-mono text-rose-400 font-bold">-₹<span id="trad-gst-fee">23.22</span></span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>Monthly Machine Rental:</span>
+                <span class="font-mono text-rose-400 font-bold">~₹699.00</span>
+              </div>
+              <div class="border-t border-rose-900/40 pt-2 flex justify-between font-bold text-sm">
+                <span class="text-rose-200">Total Cut from Shop Today:</span>
+                <span class="font-mono text-rose-400">-₹<span id="trad-total-cut">152.22</span></span>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-rose-300/70 italic bg-rose-950/40 p-2.5 rounded-xl border border-rose-900/30">
+              *With standard POS machines, Charan Traders loses approx ₹4,500+ every month purely in transaction cuts.
+            </p>
+          </div>
+
+          <!-- DhukaanPe Zero MDR Card -->
+          <div class="bg-emerald-950/20 border border-emerald-500/40 rounded-3xl p-5 space-y-4 relative overflow-hidden">
+            <div class="flex items-center justify-between border-b border-emerald-900/50 pb-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="qr-code" class="w-5 h-5 text-emerald-400"></i>
+                <div>
+                  <h3 class="text-sm font-black text-emerald-200">DhukaanPe POS & Smart Splitter</h3>
+                  <p class="text-[10px] text-emerald-300/80">Direct Sponsor Bank Escrow + P2PM Threshold Exemption</p>
+                </div>
+              </div>
+              <span class="text-xs font-mono font-black bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">0.00% MDR</span>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between text-slate-300">
+                <span>Transactions ≤ ₹2,000:</span>
+                <span class="font-mono text-emerald-400 font-bold">100% Free (0.00% MDR)</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>Transactions > ₹2,000:</span>
+                <span class="font-mono text-amber-300 font-bold">Smart Split to sub-₹2k (0.00%)</span>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <span>DhukaanPe Platform Surcharge:</span>
+                <span class="font-mono text-emerald-400 font-bold">₹0.00 (Zero Markup)</span>
+              </div>
+              <div class="border-t border-emerald-900/40 pt-2 flex justify-between font-bold text-sm">
+                <span class="text-emerald-200">Merchant Keeps:</span>
+                <span class="font-mono text-emerald-400 font-black">100.0% of Sales</span>
+              </div>
+            </div>
+
+            <div class="bg-emerald-950/50 p-3 rounded-2xl border border-emerald-500/30 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] uppercase font-bold text-emerald-400">Charan Traders Saved Today:</span>
+                <div class="text-xl font-black text-amber-300 font-mono">₹<span id="calc-savings-total">152.22</span></div>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] text-slate-400">Projected 1-Yr Savings</span>
+                <div class="text-xs font-black text-emerald-300 font-mono">₹55,560+</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Interactive Monthly Simulator -->
+        <div class="bg-merchant-surface p-5 rounded-3xl border border-merchant-border space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-white">Interactive Monthly Volume Simulator</h3>
+              <p class="text-xs text-slate-400">Slide to see how much commission Charan Traders saves each month with DhukaanPe</p>
+            </div>
+            <div class="font-mono text-base font-black text-amber-400 bg-merchant-dark px-3 py-1 rounded-xl border border-merchant-border">
+              ₹<span id="slider-vol-display">2,00,000</span> / month
+            </div>
+          </div>
+
+          <input id="vol-slider" type="range" min="50000" max="1000000" step="25000" value="200000" oninput="updateVolumeSimulation(this.value)" class="w-full accent-amber-400 cursor-pointer" />
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+            <div class="p-3 bg-merchant-dark rounded-2xl border border-merchant-border">
+              <span class="text-[10px] text-slate-400">2% Traditional Loss</span>
+              <div class="text-base font-bold text-rose-400 font-mono mt-0.5">₹<span id="sim-trad-cut">4,720</span></div>
+            </div>
+            <div class="p-3 bg-merchant-dark rounded-2xl border border-merchant-border">
+              <span class="text-[10px] text-slate-400">DhukaanPe Platform Fee</span>
+              <div class="text-base font-bold text-emerald-400 font-mono mt-0.5">₹0.00</div>
+            </div>
+            <div class="p-3 bg-emerald-950/30 rounded-2xl border border-emerald-500/30">
+              <span class="text-[10px] text-emerald-300 font-bold">Total Kept in Shop's Pocket</span>
+              <div class="text-base font-black text-amber-300 font-mono mt-0.5">₹<span id="sim-net-saved">4,720</span> / mo</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TAB 5: SETTLEMENTS & VYAPAR LOANS ================= -->
+    <section id="view-banking" class="space-y-4 hidden">
+      
+      <!-- Instant Bank Settlement Sweep Card -->
+      <div class="bg-merchant-card border border-merchant-border rounded-3xl p-5 sm:p-6 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Available For Immediate Settlement</span>
+            <div class="text-3xl font-black text-emerald-400 font-mono mt-1">
+              ₹<span id="banking-unsettled-display">6,615</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1 flex items-center gap-1.5">
+              <i data-lucide="building-2" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Linked Account: <strong class="text-white">Canara Bank, Kurnool Branch (••6420)</strong></span>
+            </p>
+          </div>
+          <button onclick="settleInstantImps()" class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-xl transition active:scale-95 flex items-center gap-2 self-start sm:self-auto">
+            <i data-lucide="arrow-down-to-dot" class="w-4 h-4"></i>
+            <span>Instant IMPS Sweep (0% Fee)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Merchant Cash Advance (Vyapar Loan) -->
+      <div class="bg-gradient-to-br from-merchant-surface to-slate-950 border border-merchant-border rounded-3xl p-6 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-[10px] font-black tracking-wider uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded">
+              QR Turnover Underwriting
+            </span>
+            <h3 class="text-base sm:text-lg font-black text-white mt-1.5">Charan Traders Working Capital Loan</h3>
+            <p class="text-xs text-slate-300">Underwritten by partner RBI-registered NBFC based on ₹1,40,000+ monthly QR flow</p>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 uppercase font-bold">Active Principal Balance</span>
+            <div class="text-2xl font-black text-amber-400 font-mono" id="loan-balance-display">₹99,265</div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-merchant-dark rounded-2xl border border-merchant-border text-xs space-y-1.5">
+          <div class="flex justify-between text-slate-300">
+            <span>Daily Repayment Mechanism:</span>
+            <strong class="text-emerald-400">10% Split Cut from Incoming QR Sales</strong>
+          </div>
+          <div class="flex justify-between text-slate-300">
+            <span>Interest Rate:</span>
+            <strong class="text-white">1.1% flat per month (No EMI defaults)</strong>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= PERMANENT LEGAL FOOTER ================= -->
+  <footer class="bg-slate-950 border-t border-merchant-border text-slate-400 text-xs py-6 px-4">
+    <div class="max-w-7xl mx-auto space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
+            D
+          </div>
+          <span class="font-bold text-slate-200">DhukaanPe Technologies Private Limited</span>
+          <span class="text-[10px] text-slate-400 font-mono">CIN: U72900AP2024PTC098214</span>
+        </div>
+        <div class="flex items-center gap-3 text-[11px]">
+          <button onclick="toggleModal('legal-modal')" class="hover:text-amber-400 transition underline">Legal Disclaimers</button>
+          <span>•</span>
+          <button onclick="toggleModal('legal-modal')" class="hover:text-amber-400 transition underline">Trademark Notice</button>
+          <span>•</span>
+          <button onclick="toggleModal('kyb-modal')" class="hover:text-amber-400 transition underline">Bank Partner Escrow</button>
+        </div>
+      </div>
+
+      <p class="text-[10px] text-slate-400 leading-relaxed">
+        <strong>Statutory Notice:</strong> "DhukaanPe" and "DhukaanLe" are registered proprietary marks of DhukaanPe Technologies Pvt. Ltd. (Trade Mark Applications filed under Classes 9 & 36 with the Trade Marks Registry of India). DhukaanPe operates as an independent Third-Party Application Provider (TPAP) technology platform in technical tie-up with authorized sponsor acquiring banks (YES Bank / Axis Bank). DhukaanPe is NOT associated, affiliated, authorized, endorsed by, or in any way officially connected with PhonePe Private Limited, BharatPe (Resilient Innovations Pvt. Ltd.), Paytm (One97 Communications), Google Pay, or any of their subsidiaries. All product and company names are the registered trademarks of their original owners.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ================= MODAL: SHARE APP LINK (SHARE WITH FRIENDS) ================= -->
+  <div id="share-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-merchant-card border border-merchant-border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 relative text-xs">
+      <button onclick="toggleModal('share-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 border-b border-merchant-border pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-bold">
+          <i data-lucide="share-2" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-white">Share DhukaanPe POS</h3>
+          <p class="text-[11px] text-slate-300">Invite friends & merchants to test Charan Traders POS</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 leading-relaxed">
+        This app is built as a self-contained bundle. Anyone opening this link on their mobile or desktop browser gets full access to the register, audio speaker synthesis, smart bill splitter, and Khata ledger.
+      </p>
+
+      <div class="bg-merchant-surface p-3 rounded-2xl border border-merchant-border space-y-2">
+        <label class="text-[10px] font-bold text-slate-400 uppercase">Live Web URL / File Location</label>
+        <div class="flex items-center gap-2">
+          <input id="share-url-input" type="text" readonly value="" class="w-full bg-merchant-dark border border-merchant-border rounded-xl px-3 py-2 text-white font-mono text-[11px] focus:outline-none" />
+          <button onclick="copyShareUrl()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shrink-0 transition active:scale-95">
+            Copy
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 pt-2">
+        <button onclick="shareViaWebShare()" class="py-2.5 bg-gradient-to-r from-jade-700 to-emerald-600 hover:from-jade-600 hover:to-emerald-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-1.5 active:scale-95">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i> Share to WhatsApp
+        </button>
+        <button onclick="toggleModal('share-modal')" class="py-2.5 bg-merchant-surface hover:bg-merchant-border text-slate-300 font-bold rounded-xl transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: LEGAL & ANTI-IMPERSONATION DISCLOSURES ================= -->
+  <div id="legal-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-merchant-card border border-merchant-border rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative text-xs max-h-[90vh] overflow-y-auto">
+      <button onclick="toggleModal('legal-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 border-b border-merchant-border pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-white">Intellectual Property & Legal Protection</h3>
+          <p class="text-[11px] text-amber-300 font-bold">Google Play Developer Policy & Trademark Safe Harbor</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-slate-300 leading-relaxed">
+        <div class="p-3 bg-merchant-surface rounded-2xl border border-merchant-border space-y-1">
+          <h4 class="font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i> Distinct Brand Identity & Non-Exclusivity
+          </h4>
+          <p class="text-[11px] text-slate-300">
+            In accordance with judicial precedents established by the Hon'ble Delhi High Court and Bombay High Court regarding the descriptive suffix '-Pe' (derived from 'Pay'), no single commercial entity holds an exclusive monopoly over descriptive terms or payment suffixes. DhukaanPe maintains an entirely distinct, original visual trade dress, custom geometric logo, and unique Forest Jade/Gold palette, preventing any likelihood of consumer confusion under Section 29 of the Trade Marks Act, 1999.
+          </p>
+        </div>
+
+        <div class="p-3 bg-merchant-surface rounded-2xl border border-merchant-border space-y-1">
+          <h4 class="font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i> Trademark & Developer Compliance
+          </h4>
+          <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+            <li><strong>Wordmark:</strong> DhukaanPe™ / DhukaanLe™ (Classes 9: Software & 36: Financial Services).</li>
+            <li><strong>Play Store Compliance:</strong> Full compliance with Google Play Impersonation & Deceptive Behavior policies. Clear ownership by DhukaanPe Technologies Pvt. Ltd.</li>
+            <li><strong>Soundbox Acoustic Tone:</strong> 100% custom-synthesized 3-tone acoustic chime, distinct from any competitor audio mark.</li>
+          </ul>
+        </div>
+
+        <div class="p-3 bg-merchant-surface rounded-2xl border border-merchant-border space-y-1">
+          <h4 class="font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-400"></i> Sponsor Bank Escrow Rails
+          </h4>
+          <p class="text-[11px] text-slate-300">
+            UPI acquiring rails are operated in partnership with authorized sponsor banks (YES Bank / Axis Bank TPAP escrow). DhukaanPe does not hold merchant funds in private wallets, adhering strictly to RBI Master Directions on Payment Aggregators and Payment Gateways.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleModal('legal-modal')" class="w-full py-2.5 bg-jade-700 hover:bg-jade-600 text-white font-bold text-xs rounded-xl transition">
+          Acknowledge & Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ZERO MDR REGULATORY & REVENUE MODEL -->
+  <div id="zero-mdr-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-merchant-card border border-merchant-border rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative text-xs">
+      <button onclick="toggleModal('zero-mdr-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 border-b border-merchant-border pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold">
+          <i data-lucide="percent" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-white">How DhukaanPe Operates at 0% MDR</h3>
+          <p class="text-[11px] text-emerald-400 font-bold">NPCI P2PM Tier • Legally Compliant & Sustainable</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-slate-300 leading-relaxed">
+        <div class="p-3 bg-merchant-surface rounded-2xl border border-merchant-border space-y-1">
+          <h4 class="font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="landmark" class="w-3.5 h-3.5 text-emerald-400"></i> Government & NPCI Mandate
+          </h4>
+          <p class="text-[11px] text-slate-300">
+            Under MeitY and NPCI directives, Peer-to-Merchant (P2PM) transactions for neighborhood retailers (MCC 5411 Grocery) carry zero merchant discount rate. Transactions ≤ ₹2,000 are completely free of interchange cuts. For transactions above ₹2,000, our <strong>Smart Bill Splitter</strong> enables splitting into sub-₹2,000 parts to preserve 0% MDR status.
+          </p>
+        </div>
+
+        <div class="p-3 bg-merchant-surface rounded-2xl border border-merchant-border space-y-1.5">
+          <h4 class="font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i> Sustainable Business Model
+          </h4>
+          <p class="text-[11px] text-slate-300">
+            Payment acceptance is completely free. We generate revenue through optional value-added merchant solutions:
+          </p>
+          <ul class="space-y-1 text-[11px] list-disc list-inside text-slate-300">
+            <li><strong>4G Speaker Hardware:</strong> ₹99–₹129/month SIM & maintenance subscription.</li>
+            <li><strong>Vyapar Micro-Loans:</strong> Interest spread & origination commissions via daily 10% split settlements with partner NBFCs.</li>
+            <li><strong>B2B FMCG Distributor Payouts:</strong> Direct digital stockist invoicing fee charged to distributors.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="toggleModal('zero-mdr-modal')" class="w-full py-2.5 bg-jade-700 hover:bg-jade-600 text-white font-bold text-xs rounded-xl transition">
+          Understood & Verified
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: KYB CERTIFICATE -->
+  <div id="kyb-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-merchant-card border border-merchant-border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 relative">
+      <button onclick="toggleModal('kyb-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-3 border-b border-merchant-border pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-bold">
+          <i data-lucide="award" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-white">Merchant Business Certificate</h3>
+          <p class="text-[11px] text-emerald-400 font-bold">Status: NPCI UPI Live & Penny-Drop Verified</p>
+        </div>
+      </div>
+
+      <div class="space-y-2.5 text-xs">
+        <div class="flex justify-between py-1 border-b border-merchant-border">
+          <span class="text-slate-400">Legal Business Name</span>
+          <strong class="text-white">Charan Traders</strong>
+        </div>
+        <div class="flex justify-between py-1 border-b border-merchant-border">
+          <span class="text-slate-400">Store Address</span>
+          <strong class="text-white">Ganesh Nagar, Kurnool, AP</strong>
+        </div>
+        <div class="flex justify-between py-1 border-b border-merchant-border">
+          <span class="text-slate-400">Category (MCC)</span>
+          <strong class="text-white">5411 (Grocery & Kirana)</strong>
+        </div>
+        <div class="flex justify-between py-1 border-b border-merchant-border">
+          <span class="text-slate-400">Udyam MSME No.</span>
+          <span class="font-mono text-emerald-400 font-bold">UDYAM-AP-11-0049281</span>
+        </div>
+        <div class="flex justify-between py-1 border-b border-merchant-border">
+          <span class="text-slate-400">Linked Current A/C</span>
+          <span class="font-mono text-white">Canara Bank Kurnool (••6420)</span>
+        </div>
+      </div>
+
+      <button onclick="toggleModal('kyb-modal')" class="w-full py-2.5 bg-merchant-surface hover:bg-merchant-border text-white font-bold text-xs rounded-xl transition">
+        Close Certificate
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD KHATA ENTRY -->
+  <div id="khata-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-merchant-card border border-merchant-border rounded-3xl max-w-sm w-full p-5 space-y-3.5 shadow-2xl relative text-xs">
+      <button onclick="toggleModal('khata-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div>
+        <h3 class="font-black text-sm text-white">Add Customer Credit Entry</h3>
+        <p class="text-[11px] text-slate-400">Record kirana credit for regular store customers</p>
+      </div>
+
+      <div class="space-y-2.5">
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Customer Full Name</label>
+          <input id="input-khata-name" type="text" placeholder="e.g. S. Ramanjaneyulu" class="w-full bg-merchant-dark border border-merchant-border rounded-xl p-2.5 text-white font-bold focus:outline-none focus:border-jade-500" />
+        </div>
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Mobile Number (WhatsApp)</label>
+          <input id="input-khata-phone" type="tel" placeholder="e.g. 9848011223" class="w-full bg-merchant-dark border border-merchant-border rounded-xl p-2.5 text-white font-mono focus:outline-none focus:border-jade-500" />
+        </div>
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Items Description</label>
+          <input id="input-khata-items" type="text" placeholder="e.g. 5kg Rice + 1L Oil" class="w-full bg-merchant-dark border border-merchant-border rounded-xl p-2.5 text-white focus:outline-none focus:border-jade-500" />
+        </div>
+        <div>
+          <label class="block text-slate-400 font-bold mb-1">Credit Amount (₹)</label>
+          <input id="input-khata-amt" type="number" placeholder="e.g. 350" class="w-full bg-merchant-dark border border-merchant-border rounded-xl p-2.5 text-white font-mono font-bold text-sm focus:outline-none focus:border-jade-500" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 pt-2">
+        <button onclick="toggleModal('khata-modal')" class="py-2.5 bg-merchant-surface text-slate-300 font-bold rounded-xl">Cancel</button>
+        <button onclick="saveKhataEntry()" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl shadow">Save to Khata</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Shelf -->
+  <div id="toast-shelf" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col space-y-2 pointer-events-none w-11/12 max-w-sm"></div>
+
+  <!-- ================= JAVASCRIPT APP LOGIC ================= -->
+  <script>
+    const posState = {
+      merchant: {
+        name: "Charan Traders",
+        location: "Ganesh Nagar, Kurnool",
+        vpa: "charan@ybl",
+        bank: "Canara Bank Kurnool (••6420)",
+        role: "owner"
+      },
+      speaker: {
+        language: "te-IN",
+        lastMessage: "ధూకాన్‌పే చరణ్ ట్రేడర్స్ కు స్వాగతం"
+      },
+      numpad: {
+        amount: 0
+      },
+      // Smart Splitter State
+      smartSplit: {
+        isActive: false,
+        totalAmount: 0,
+        parts: [],
+        currentPartIndex: 0
+      },
+      metrics: {
+        todaySales: 7350,
+        upiSales: 6450,
+        cashSales: 900,
+        txCount: 21,
+        settlePool: 6615,
+        loanCutToday: 735,
+        loanBalance: 99265,
+        totalNpciInterchange: 0.00
+      },
+      auditJournal: [
+        { time: "18:42", mode: "UPI Instant", customer: "Ramesh Kumar (Ganesh Nagar)", amount: 150, npciFee: 0.00, feeRule: "≤₹2k Exempt", status: "Success", utr: "42629104812" },
+        { time: "17:15", mode: "UPI Instant", customer: "B. Nagendra", amount: 500, npciFee: 0.00, feeRule: "≤₹2k Exempt", status: "Success", utr: "42629104723" },
+        { time: "16:30", mode: "Cash Register", customer: "Walk-in Counter", amount: 200, npciFee: 0.00, feeRule: "Cash Till", status: "Success", utr: "CASH-REG-09" },
+        { time: "15:10", mode: "UPI Instant", customer: "G. Venkatesh", amount: 120, npciFee: 0.00, feeRule: "≤₹2k Exempt", status: "Success", utr: "42629104551" }
+      ],
+      khataRecords: [
+        { id: 1, name: "Ramesh (Ganesh Nagar)", phone: "9848011223", items: "5kg Rice + Masala", amount: 300, date: "Today" },
+        { id: 2, name: "Venkatesh Babu", phone: "9440123987", items: "Kirana items", amount: 180, date: "Yesterday" },
+        { id: 3, name: "Suresh Naidu (Kurnool)", phone: "9885100234", items: "2 tins Sunflower Oil", amount: 450, date: "3 days ago" },
+        { id: 4, name: "Master Medicals Staff", phone: "9949112233", items: "Beverages & Snacks", amount: 1620, date: "5 days ago" },
+        { id: 5, name: "Anand Motors Kurnool", phone: "9440998877", items: "Store Supplies", amount: 1170, date: "1 week ago" }
+      ]
+    };
+
+    let audioContext = null;
+    let qrGenerator = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initQrGenerator();
+      renderAuditJournal();
+      renderKhataCards();
+      updateSavingsMetrics();
+      updateVolumeSimulation(200000);
+      initShareUrl();
+      
+      const now = new Date();
+      document.getElementById('z-date-label').innerText = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      
+      document.getElementById('speaker-lang-select').addEventListener('change', (e) => {
+        posState.speaker.language = e.target.value;
+        showToast("Speaker Configured", `Voice announcement set to ${e.target.options[e.target.selectedIndex].text}`, "info");
+      });
+    });
+
+    function initShareUrl() {
+      const currentUrl = window.location.href;
+      const shareInput = document.getElementById('share-url-input');
+      if (shareInput) {
+        shareInput.value = currentUrl;
+      }
+    }
+
+    function copyShareUrl() {
+      const shareInput = document.getElementById('share-url-input');
+      if (shareInput) {
+        shareInput.select();
+        document.execCommand('copy');
+        showToast("Link Copied!", "Shareable link copied to clipboard", "success");
+      }
+    }
+
+    function shareViaWebShare() {
+      const shareData = {
+        title: 'DhukaanPe POS - Charan Traders',
+        text: 'Test the DhukaanPe Zero-MDR Merchant Operating System demo live in your browser:',
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        navigator.share(shareData).catch(() => {});
+      } else {
+        const text = encodeURIComponent(`${shareData.text} ${shareData.url}`);
+        window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+      }
+    }
+
+    function updateSavingsMetrics() {
+      const upi = posState.metrics.upiSales;
+      const tradFee = upi * 0.02;
+      const tradGst = tradFee * 0.18;
+      const totalSaved = tradFee + tradGst;
+
+      document.getElementById('metric-saved-amount').innerText = totalSaved.toFixed(2);
+      document.getElementById('calc-savings-total').innerText = totalSaved.toFixed(2);
+      
+      document.querySelectorAll('.calc-upi-sales').forEach(el => el.innerText = upi.toLocaleString('en-IN'));
+      document.getElementById('trad-mdr-fee').innerText = tradFee.toFixed(2);
+      document.getElementById('trad-gst-fee').innerText = tradGst.toFixed(2);
+      document.getElementById('trad-total-cut').innerText = totalSaved.toFixed(2);
+
+      document.getElementById('z-upi-val').innerText = upi.toLocaleString('en-IN');
+      document.getElementById('ledger-trad-cost').innerText = totalSaved.toFixed(2);
+      document.getElementById('ledger-npci-fee').innerText = posState.metrics.totalNpciInterchange.toFixed(2);
+
+      const netSettle = Math.max(0, upi - posState.metrics.loanCutToday - posState.metrics.totalNpciInterchange);
+      document.getElementById('ledger-net-remit').innerText = netSettle.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+    function updateVolumeSimulation(val) {
+      const vol = Number(val);
+      document.getElementById('slider-vol-display').innerText = vol.toLocaleString('en-IN');
+      const loss = vol * 0.02 * 1.18;
+      document.getElementById('sim-trad-cut').innerText = Math.round(loss).toLocaleString('en-IN');
+      document.getElementById('sim-net-saved').innerText = Math.round(loss).toLocaleString('en-IN');
+    }
+
+    function initQrGenerator(overrideAmount = null) {
+      const container = document.getElementById('dynamic-qr-render');
+      container.innerHTML = "";
+
+      const targetAmount = overrideAmount !== null ? overrideAmount : posState.numpad.amount;
+
+      let upiUri = `upi://pay?pa=${posState.merchant.vpa}&pn=${encodeURIComponent(posState.merchant.name)}&cu=INR`;
+      if (targetAmount > 0) {
+        upiUri += `&am=${targetAmount}`;
+      }
+
+      qrGenerator = new QRCode(container, {
+        text: upiUri,
+        width: 180,
+        height: 180,
+        colorDark: "#07130e",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      document.getElementById('standee-amount-display').innerText = targetAmount > 0 
+        ? Number(targetAmount).toFixed(2) 
+        : "0.00";
+    }
+
+    // Numpad & Fast Presets
+    function pressKey(val) {
+      if (posState.smartSplit.isActive) {
+        cancelSmartSplit();
+      }
+      let str = posState.numpad.amount === 0 ? "" : posState.numpad.amount.toString();
+      if (str.length >= 6) return;
+      str += val;
+      posState.numpad.amount = parseInt(str, 10) || 0;
+      updateNumpadDisplay();
+    }
+
+    function pressBackspace() {
+      if (posState.smartSplit.isActive) {
+        cancelSmartSplit();
+      }
+      let str = posState.numpad.amount.toString();
+      if (str.length <= 1) {
+        posState.numpad.amount = 0;
+      } else {
+        str = str.slice(0, -1);
+        posState.numpad.amount = parseInt(str, 10) || 0;
+      }
+      updateNumpadDisplay();
+    }
+
+    function setFastPreset(amt) {
+      posState.numpad.amount = amt;
+      updateNumpadDisplay();
+      showToast("Amount Loaded", `Bill amount set to ₹${amt}`, "info");
+    }
+
+    function clearNumpad() {
+      posState.numpad.amount = 0;
+      cancelSmartSplit();
+      updateNumpadDisplay();
+      initQrGenerator();
+      
+      const pill = document.getElementById('qr-status-pill');
+      pill.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30";
+      pill.innerHTML = `<i data-lucide="unlock" class="w-3.5 h-3.5"></i> Open Static Mode`;
+      
+      const feePill = document.getElementById('qr-fee-pill');
+      feePill.innerHTML = `<i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i> Zero MDR (0%)`;
+      feePill.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30";
+
+      document.getElementById('standee-fee-note').innerText = "Merchant Fee: ₹0.00 (Zero MDR) • 100% credited";
+      document.getElementById('sim-pay-btn-text').innerText = "Scan & Pay UPI";
+      lucide.createIcons();
+    }
+
+    function addToBill(price, name) {
+      if (posState.smartSplit.isActive) {
+        cancelSmartSplit();
+      }
+      posState.numpad.amount += price;
+      updateNumpadDisplay();
+      showToast("Item Added", `${name} (+₹${price})`, "info");
+    }
+
+    function updateNumpadDisplay() {
+      const amt = posState.numpad.amount;
+      document.getElementById('numpad-amount-display').innerText = amt.toLocaleString('en-IN');
+      const badge = document.getElementById('screen-status-badge');
+      const splitBanner = document.getElementById('split-alert-banner');
+
+      if (amt > 2000) {
+        // Exceeds ₹2,000 NPCI threshold
+        const potentialFee = (amt * 0.004).toFixed(2);
+        document.getElementById('split-potential-fee').innerText = potentialFee;
+        splitBanner.classList.remove('hidden');
+
+        badge.innerHTML = `<i data-lucide="alert-circle" class="w-3 h-3 text-amber-400"></i> >₹2k (0.40% NPCI applies unless split)`;
+      } else if (amt > 0) {
+        splitBanner.classList.add('hidden');
+        badge.innerHTML = `<i data-lucide="lock" class="w-3 h-3 text-amber-400"></i> Tap 'Lock Dynamic QR' for ₹${amt} (0% Fee)`;
+      } else {
+        splitBanner.classList.add('hidden');
+        badge.innerHTML = `<i data-lucide="zap" class="w-3 h-3 text-amber-400"></i> Active POS Keypad`;
+      }
+      lucide.createIcons();
+    }
+
+    // ================= SMART BILL SPLITTER ENGINE =================
+    function activateSmartSplit() {
+      const total = posState.numpad.amount;
+      if (total <= 2000) return;
+
+      // Split into 2 equal parts (both strictly ≤ ₹2000 to remain 0% MDR)
+      const part1 = Math.ceil(total / 2);
+      const part2 = total - part1;
+
+      posState.smartSplit = {
+        isActive: true,
+        totalAmount: total,
+        parts: [part1, part2],
+        currentPartIndex: 0
+      };
+
+      renderSmartSplitUI();
+      showToast("Smart Split Activated", `Split ₹${total} into 2 bills of ₹${part1} and ₹${part2} to bypass the 0.40% fee!`, "success");
+    }
+
+    function renderSmartSplitUI() {
+      const splitBox = document.getElementById('split-progress-box');
+      const partIndex = posState.smartSplit.currentPartIndex;
+      const currentPartAmt = posState.smartSplit.parts[partIndex];
+
+      splitBox.classList.remove('hidden');
+      document.getElementById('split-part-indicator').innerText = `Part ${partIndex + 1} of 2 (₹${currentPartAmt})`;
+      document.getElementById('split-total-orig').innerText = posState.smartSplit.totalAmount.toLocaleString('en-IN');
+
+      initQrGenerator(currentPartAmt);
+
+      const pill = document.getElementById('qr-status-pill');
+      pill.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
+      pill.innerHTML = `<i data-lucide="lock" class="w-3.5 h-3.5"></i> Part ${partIndex + 1}: Locked at ₹${currentPartAmt}.00`;
+
+      const feePill = document.getElementById('qr-fee-pill');
+      feePill.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+      feePill.innerHTML = `<i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i> Smart Split 0% MDR`;
+
+      document.getElementById('standee-subtext').innerText = `Part ${partIndex + 1} of 2: Customer pays ₹${currentPartAmt}`;
+      document.getElementById('standee-fee-note').innerText = `NPCI Fee: ₹0.00 (Exempt under sub-₹2k P2PM Rule)`;
+      document.getElementById('sim-pay-btn-text').innerText = `Pay Part ${partIndex + 1} (₹${currentPartAmt})`;
+
+      lucide.createIcons();
+    }
+
+    function cancelSmartSplit() {
+      posState.smartSplit.isActive = false;
+      document.getElementById('split-progress-box').classList.add('hidden');
+      document.getElementById('sim-pay-btn-text').innerText = "Scan & Pay UPI";
+    }
+
+    function lockAmountOnDynamicQr() {
+      if (posState.numpad.amount <= 0) {
+        showToast("Enter Amount", "Please enter an amount on the keypad first", "error");
+        return;
+      }
+      const amt = posState.numpad.amount;
+      initQrGenerator(amt);
+
+      const pill = document.getElementById('qr-status-pill');
+      const feePill = document.getElementById('qr-fee-pill');
+
+      if (amt > 2000) {
+        pill.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30";
+        pill.innerHTML = `<i data-lucide="lock" class="w-3.5 h-3.5"></i> Locked at ₹${amt}.00`;
+        
+        feePill.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+        feePill.innerHTML = `<i data-lucide="alert-circle" class="w-3 h-3 text-amber-400"></i> Standard P2M (0.40% Switch)`;
+
+        const fee = (amt * 0.004).toFixed(2);
+        document.getElementById('standee-fee-note').innerText = `NPCI Switch Fee: ₹${fee} (0.40% on >₹2k) • DhukaanPe Markup: ₹0.00`;
+      } else {
+        pill.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
+        pill.innerHTML = `<i data-lucide="lock" class="w-3.5 h-3.5"></i> Locked at ₹${amt}.00 (0% MDR)`;
+
+        feePill.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30";
+        feePill.innerHTML = `<i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i> Zero MDR (0%)`;
+        document.getElementById('standee-fee-note').innerText = "Merchant Fee: ₹0.00 (Zero MDR) • 100% credited";
+      }
+
+      lucide.createIcons();
+      showToast("POS Dynamic QR Locked", `Customer display locked to ₹${amt}`, "success");
+    }
+
+    /* Custom 3-Tone Ascending Signature Chime (F5 -> A5 -> C6) */
+    function playHardwareTone() {
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+
+        const now = audioContext.currentTime;
+        const gain = audioContext.createGain();
+        gain.connect(audioContext.destination);
+
+        // Note 1: F5 (698.46 Hz)
+        const osc1 = audioContext.createOscillator();
+        osc1.type = "sine";
+        osc1.frequency.setValueAtTime(698.46, now);
+        osc1.connect(gain);
+        osc1.start(now);
+        osc1.stop(now + 0.12);
+
+        // Note 2: A5 (880.00 Hz)
+        const osc2 = audioContext.createOscillator();
+        osc2.type = "sine";
+        osc2.frequency.setValueAtTime(880.00, now + 0.12);
+        osc2.connect(gain);
+        osc2.start(now + 0.12);
+        osc2.stop(now + 0.24);
+
+        // Note 3: C6 (1046.50 Hz)
+        const osc3 = audioContext.createOscillator();
+        osc3.type = "triangle";
+        osc3.frequency.setValueAtTime(1046.50, now + 0.24);
+        osc3.connect(gain);
+        osc3.start(now + 0.24);
+        osc3.stop(now + 0.45);
+
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+      } catch (e) {
+        console.warn("Audio chime blocked", e);
+      }
+    }
+
+    function triggerVoiceAnnouncement(amount) {
+      playHardwareTone();
+      const lang = posState.speaker.language;
+      let speechPhrase = "";
+
+      if (lang === "te-IN") {
+        speechPhrase = `ధూకాన్‌పే లో ${amount} రూపాయలు అందాయి. ధన్యవాదములు.`;
+      } else if (lang === "hi-IN") {
+        speechPhrase = `दुकानपे पर ${amount} रुपये प्राप्त हुए। धन्यवाद।`;
+      } else {
+        speechPhrase = `Received ${amount} rupees on DhukaanPe. Thank you.`;
+      }
+
+      posState.speaker.lastMessage = speechPhrase;
+      document.getElementById('soundbox-last-spoken').innerText = `"${speechPhrase}"`;
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(speechPhrase);
+        utterance.lang = lang;
+        utterance.rate = 0.95;
+
+        const eq = document.getElementById('soundbox-equalizer');
+        utterance.onstart = () => eq.classList.remove('hidden');
+        utterance.onend = () => eq.classList.add('hidden');
+        utterance.onerror = () => eq.classList.add('hidden');
+
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function replayAnnouncement() {
+      if ('speechSynthesis' in window && posState.speaker.lastMessage) {
+        playHardwareTone();
+        const utterance = new SpeechSynthesisUtterance(posState.speaker.lastMessage);
+        utterance.lang = posState.speaker.language;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function processPaymentTransaction(amount, mode, customerName) {
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.75 } });
+      }
+
+      const isCash = mode.includes('Cash');
+      
+      // Calculate Regulatory NPCI Switch Interchange
+      let npciFee = 0.00;
+      let feeRule = "≤₹2k Exempt (0%)";
+      if (!isCash && amount > 2000) {
+        npciFee = parseFloat((amount * 0.004).toFixed(2));
+        feeRule = "NPCI 0.40% Rule (>₹2k)";
+      } else if (isCash) {
+        feeRule = "Cash in Till (0%)";
+      } else if (posState.smartSplit.isActive) {
+        feeRule = "Smart Split Protected (0%)";
+      }
+
+      const loanCut = isCash ? 0 : Math.round(amount * 0.10);
+      const netSettle = amount - loanCut - npciFee;
+
+      posState.metrics.todaySales += amount;
+      if (!isCash) {
+        posState.metrics.upiSales += amount;
+      } else {
+        posState.metrics.cashSales += amount;
+      }
+
+      posState.metrics.txCount += 1;
+      posState.metrics.settlePool += netSettle;
+      posState.metrics.loanCutToday += loanCut;
+      posState.metrics.totalNpciInterchange += npciFee;
+      posState.metrics.loanBalance = Math.max(0, posState.metrics.loanBalance - loanCut);
+
+      const now = new Date();
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      
+      posState.auditJournal.unshift({
+        time: timeStr,
+        mode: mode,
+        customer: customerName,
+        amount: amount,
+        npciFee: npciFee,
+        feeRule: feeRule,
+        status: "Success",
+        utr: "4262" + Math.floor(10000000 + Math.random() * 90000000)
+      });
+
+      // Update Screen Metrics
+      document.getElementById('metric-today-sales').innerText = posState.metrics.todaySales.toLocaleString('en-IN');
+      document.getElementById('metric-tx-count').innerText = posState.metrics.txCount;
+      document.getElementById('metric-settle-pool').innerText = Math.round(posState.metrics.settlePool).toLocaleString('en-IN');
+      document.getElementById('metric-loan-cut-today').innerText = posState.metrics.loanCutToday.toLocaleString('en-IN');
+      document.getElementById('banking-unsettled-display').innerText = Math.round(posState.metrics.settlePool).toLocaleString('en-IN');
+      document.getElementById('loan-balance-display').innerText = `₹${posState.metrics.loanBalance.toLocaleString('en-IN')}`;
+
+      document.getElementById('z-gross-val').innerText = posState.metrics.todaySales.toLocaleString('en-IN');
+      document.getElementById('z-count-val').innerText = posState.metrics.txCount;
+      document.getElementById('z-loan-val').innerText = posState.metrics.loanCutToday.toLocaleString('en-IN');
+
+      updateSavingsMetrics();
+      renderAuditJournal();
+      triggerVoiceAnnouncement(amount);
+
+      // Handle Smart Splitter progression
+      if (posState.smartSplit.isActive) {
+        if (posState.smartSplit.currentPartIndex === 0) {
+          // Progress to Part 2
+          posState.smartSplit.currentPartIndex = 1;
+          renderSmartSplitUI();
+          showToast("Part 1 Paid! Now Showing Part 2", `₹${amount} cleared. Now scan Part 2 to finish!`, "success");
+          return;
+        } else {
+          // Finished all parts
+          cancelSmartSplit();
+          clearNumpad();
+          showToast("Smart Split Complete!", `Both parts paid! Full ₹${posState.smartSplit.totalAmount} collected with 0% MDR.`, "success");
+          return;
+        }
+      }
+
+      clearNumpad();
+      showToast("Payment Complete", `₹${amount} received from ${customerName} (Fee: ₹${npciFee.toFixed(2)})`, "success");
+    }
+
+    function simulateCustomerPayment(name, mode) {
+      if (posState.smartSplit.isActive) {
+        const partAmt = posState.smartSplit.parts[posState.smartSplit.currentPartIndex];
+        processPaymentTransaction(partAmt, `UPI Split Part ${posState.smartSplit.currentPartIndex + 1}`, `${name} [Part ${posState.smartSplit.currentPartIndex + 1}]`);
+      } else {
+        const amt = posState.numpad.amount > 0 ? posState.numpad.amount : 150;
+        processPaymentTransaction(amt, mode, name);
+      }
+    }
+
+    function simulateCardTap() {
+      const amt = posState.numpad.amount > 0 ? posState.numpad.amount : 250;
+      showToast("NFC Reader", "Contactless RuPay Card tapped (0% MDR under MeitY)...", "info");
+      setTimeout(() => {
+        processPaymentTransaction(amt, "RuPay Tap (0% MDR)", "RuPay Cardholder");
+      }, 600);
+    }
+
+    function recordCashTill() {
+      if (posState.numpad.amount <= 0) {
+        showToast("Enter Amount", "Please type the cash amount received into the keypad", "error");
+        return;
+      }
+      const amt = posState.numpad.amount;
+      posState.metrics.todaySales += amt;
+      posState.metrics.cashSales += amt;
+      posState.metrics.txCount += 1;
+
+      const now = new Date();
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      posState.auditJournal.unshift({
+        time: timeStr,
+        mode: "Cash Register",
+        customer: "Walk-in Customer",
+        amount: amt,
+        npciFee: 0.00,
+        feeRule: "Cash in Till (0%)",
+        status: "Success",
+        utr: "CASH-TILL-" + Math.floor(10 + Math.random() * 90)
+      });
+
+      document.getElementById('metric-today-sales').innerText = posState.metrics.todaySales.toLocaleString('en-IN');
+      document.getElementById('metric-tx-count').innerText = posState.metrics.txCount;
+      document.getElementById('z-gross-val').innerText = posState.metrics.todaySales.toLocaleString('en-IN');
+      document.getElementById('z-count-val').innerText = posState.metrics.txCount;
+
+      renderAuditJournal();
+      playHardwareTone();
+      clearNumpad();
+      showToast("Cash Recorded", `₹${amt} cash added to till register`, "success");
+    }
+
+    // Khata Book Operations
+    function renderKhataCards() {
+      const container = document.getElementById('khata-cards-list');
+      container.innerHTML = "";
+      let total = 0;
+
+      posState.khataRecords.forEach(rec => {
+        total += rec.amount;
+        const card = document.createElement('div');
+        card.className = "bg-merchant-surface p-4 rounded-2xl border border-merchant-border flex flex-wrap items-center justify-between gap-3 shadow-sm";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-black text-white text-sm">${rec.name}</span>
+              <span class="text-[10px] text-slate-400 font-mono">• ${rec.date}</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Item: <span class="text-slate-300 font-medium">${rec.items}</span> • Ph: ${rec.phone}</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="font-mono font-black text-rose-400 text-base">₹${rec.amount}</span>
+            <button onclick="copyKhataWhatsApp('${rec.name}', ${rec.amount})" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 active:scale-95 transition" title="Copy WhatsApp Reminder">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+              <span>WhatsApp</span>
+            </button>
+            <button onclick="settleKhataItem(${rec.id}, '${rec.name}', ${rec.amount})" class="bg-merchant-dark hover:bg-slate-800 text-slate-300 text-xs font-bold px-3 py-1.5 rounded-xl active:scale-95 transition">
+              Paid
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('khata-total-amt').innerText = `₹${total.toLocaleString('en-IN')}`;
+      lucide.createIcons();
+    }
+
+    function settleKhataItem(id, name, amt) {
+      posState.khataRecords = posState.khataRecords.filter(r => r.id !== id);
+      renderKhataCards();
+      processPaymentTransaction(amt, "Khata Settled UPI", name);
+      showToast("Khata Paid", `Credit for ${name} cleared`, "success");
+    }
+
+    function copyKhataWhatsApp(name, amt) {
+      const upiLink = `upi://pay?pa=${posState.merchant.vpa}&pn=${encodeURIComponent(posState.merchant.name)}&am=${amt}&cu=INR`;
+      const msg = `నమస్కారం ${name} గారు, చరణ్ ట్రేడర్స్ (గణేష్ నగర్, కర్నూల్) నుండి మీ బకాయి ₹${amt}. దయచేసి ఈ Zero-MDR UPI లింక్ ద్వారా చెల్లించండి: ${upiLink}`;
+
+      const dummy = document.createElement('textarea');
+      dummy.value = msg;
+      document.body.appendChild(dummy);
+      dummy.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummy);
+
+      showToast("WhatsApp Copied", "Reminder text with UPI intent copied to clipboard!", "success");
+    }
+
+    function saveKhataEntry() {
+      const name = document.getElementById('input-khata-name').value.trim();
+      const phone = document.getElementById('input-khata-phone').value.trim();
+      const items = document.getElementById('input-khata-items').value.trim() || "Kirana items";
+      const amt = Number(document.getElementById('input-khata-amt').value);
+
+      if (!name || !amt || amt <= 0) {
+        showToast("Invalid Input", "Please provide customer name and valid credit amount", "error");
+        return;
+      }
+
+      posState.khataRecords.unshift({
+        id: Date.now(),
+        name: name,
+        phone: phone || "9848000000",
+        items: items,
+        amount: amt,
+        date: "Just now"
+      });
+
+      renderKhataCards();
+      toggleModal('khata-modal');
+      showToast("Saved to Khata", `₹${amt} Udhaar recorded for ${name}`, "success");
+
+      document.getElementById('input-khata-name').value = "";
+      document.getElementById('input-khata-phone').value = "";
+      document.getElementById('input-khata-items').value = "";
+      document.getElementById('input-khata-amt').value = "";
+    }
+
+    // Settlements
+    function settleInstantImps() {
+      if (posState.metrics.settlePool <= 0) {
+        showToast("No Funds", "No unsettled balance remaining to sweep", "info");
+        return;
+      }
+
+      const settled = posState.metrics.settlePool;
+      posState.metrics.settlePool = 0;
+
+      document.getElementById('metric-settle-pool').innerText = "0";
+      document.getElementById('banking-unsettled-display').innerText = "0";
+
+      const now = new Date();
+      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      posState.auditJournal.unshift({
+        time: timeStr,
+        mode: "Direct Bank Sweep",
+        customer: "Canara Bank Kurnool (••6420)",
+        amount: -settled,
+        npciFee: 0.00,
+        feeRule: "0% Gateway Fee",
+        status: "Transferred",
+        utr: "IMPS" + Math.floor(10000000 + Math.random() * 90000000)
+      });
+
+      renderAuditJournal();
+      showToast("IMPS Sweep Complete", `₹${Math.round(settled).toLocaleString('en-IN')} transferred to Canara Bank Kurnool (0% Gateway Fee)`, "success");
+    }
+
+    // Audit Journal Table Rendering with Exact Fee Ledger Details
+    function renderAuditJournal() {
+      const tbody = document.getElementById('audit-journal-rows');
+      tbody.innerHTML = "";
+
+      posState.auditJournal.forEach(tx => {
+        const isCredit = tx.amount > 0;
+        const row = document.createElement('tr');
+        row.className = "hover:bg-merchant-surface transition";
+        row.innerHTML = `
+          <td class="py-2.5 px-3 font-mono text-slate-400">${tx.time}</td>
+          <td class="py-2.5 px-3">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${tx.mode.includes('Cash') ? 'bg-amber-500/20 text-amber-300' : 'bg-jade-500/20 text-emerald-300'}">
+              ${tx.mode}
+            </span>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-white">${tx.customer}</div>
+            <div class="text-[10px] text-slate-500 font-mono">${tx.utr}</div>
+          </td>
+          <td class="py-2.5 px-3">
+            <span class="inline-flex items-center gap-1 font-mono text-[10px] ${tx.npciFee > 0 ? 'text-amber-400' : 'text-emerald-400 font-bold'}">
+              ${tx.feeRule}
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-right font-mono text-slate-300">
+            ${tx.npciFee > 0 ? `-₹${tx.npciFee.toFixed(2)}` : '₹0.00'}
+          </td>
+          <td class="py-2.5 px-3 text-right font-mono font-bold ${isCredit ? 'text-emerald-400' : 'text-rose-400'}">
+            ${isCredit ? '+' : ''}₹${(Math.abs(tx.amount) - (tx.npciFee || 0)).toLocaleString('en-IN')}
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Role Switching
+    function setRole(role) {
+      posState.merchant.role = role;
+      const ownerBtn = document.getElementById('role-owner-btn');
+      const cashierBtn = document.getElementById('role-cashier-btn');
+      const ownerOnlyElements = document.querySelectorAll('.owner-only');
+
+      if (role === 'cashier') {
+        ownerBtn.className = "px-2.5 py-1 rounded-lg font-bold text-[11px] transition text-slate-400 hover:text-white flex items-center gap-1";
+        cashierBtn.className = "px-2.5 py-1 rounded-lg font-bold text-[11px] transition bg-jade-700 text-white shadow-sm flex items-center gap-1";
+        ownerOnlyElements.forEach(el => el.classList.add('hidden'));
+        switchTab('pos');
+        showToast("Cashier Mode Active", "Sensitive settlement accounts and loan balances locked", "info");
+      } else {
+        cashierBtn.className = "px-2.5 py-1 rounded-lg font-bold text-[11px] transition text-slate-400 hover:text-white flex items-center gap-1";
+        ownerBtn.className = "px-2.5 py-1 rounded-lg font-bold text-[11px] transition bg-jade-700 text-white shadow-sm flex items-center gap-1";
+        ownerOnlyElements.forEach(el => el.classList.remove('hidden'));
+        showToast("Owner Mode Active", "Full access to bank settlements and loans restored", "success");
+      }
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      ['pos', 'zreport', 'savings', 'khata', 'banking'].forEach(id => {
+        const view = document.getElementById(`view-${id}`);
+        if (view) view.classList.add('hidden');
+        const btn = document.getElementById(`tab-btn-${id}`);
+        if (btn) {
+          btn.className = "tab-btn px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2 shrink-0 transition";
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabId}`);
+      if (activeView) activeView.classList.remove('hidden');
+      
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.className = "tab-btn px-4 py-2 rounded-xl text-xs font-black text-white bg-jade-700 flex items-center gap-2 shrink-0 transition";
+      }
+      lucide.createIcons();
+    }
+
+    // Modal & Toast Helpers
+    function toggleModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.toggle('hidden');
+    }
+
+    function showToast(title, msg, type = "info") {
+      const shelf = document.getElementById('toast-shelf');
+      const toast = document.createElement('div');
+
+      const bgThemes = {
+        success: 'bg-emerald-700 border-emerald-500/40 text-white shadow-emerald-950/60',
+        error: 'bg-rose-700 border-rose-500/40 text-white shadow-rose-950/60',
+        info: 'bg-merchant-card border-jade-600/40 text-white shadow-slate-950/70'
+      };
+
+      toast.className = `p-3 rounded-2xl border shadow-xl ${bgThemes[type] || bgThemes.info} text-xs space-y-0.5 transition-all duration-300 transform -translate-y-2 opacity-0 pointer-events-auto`;
+      toast.innerHTML = `
+        <div class="font-extrabold flex items-center justify-between">
+          <span>${title}</span>
+          <span class="text-[9px] opacity-75 font-mono">Just now</span>
+        </div>
+        <p class="text-[11px] opacity-90 leading-tight">${msg}</p>
+      `;
+
+      shelf.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('-translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
